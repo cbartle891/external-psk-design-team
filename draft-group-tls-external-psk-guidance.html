@@ -240,6 +240,10 @@ figcaption, caption {
     vertical-align: text-bottom;
     padding-bottom: 8px;
   }
+  table {
+    display: inline-block;
+    overflow-x: auto;
+  }
 }
 
 /* aside, blockquote */
@@ -513,7 +517,7 @@ hr.addr {
     padding: 0;
     margin: 0;
     border-bottom: 1px solid #ccc;
-    opacity: 0.6;
+    opacity: 0.9; /* TODO fix when Henrik takes the patch. */
   }
   #toc.active {
       opacity: 1;
