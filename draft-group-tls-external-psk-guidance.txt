@@ -2,14 +2,18 @@
 
 
 
-tls                                                               F. Bar
-Internet-Draft                                                 Baz, Inc.
-Intended status: Informational                              1 March 2020
-Expires: 2 September 2020
+tls                                                           R. Housley
+Internet-Draft                                            Vigil Security
+Intended status: Informational                                J. Hoyland
+Expires: 10 September 2020                               Cloudflare Ltd.
+                                                                M. Sethi
+                                                                Ericsson
+                                                               C.A. Wood
+                                                            9 March 2020
 
 
                  Guidance for External PSK Usage in TLS
-              draft-group-tls-external-psk-guidance-latest
+               draft-dt-tls-external-psk-guidance-latest
 
 Abstract
 
@@ -42,21 +46,22 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 2 September 2020.
+   This Internet-Draft will expire on 10 September 2020.
+
+
+
+
+
+
+Housley, et al.         Expires 10 September 2020               [Page 1]
+
+Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
+
 
 Copyright Notice
 
    Copyright (c) 2020 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
-
-
-
-
-
-Bar                     Expires 2 September 2020                [Page 1]
-
-Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
-
 
    This document is subject to BCP 78 and the IETF Trust's Legal
    Provisions Relating to IETF Documents (https://trustee.ietf.org/
@@ -70,29 +75,48 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-   2.  Conventions and Definitions . . . . . . . . . . . . . . . . .   2
-   3.  PSK Security Properties . . . . . . . . . . . . . . . . . . .   2
+   2.  Conventions and Definitions . . . . . . . . . . . . . . . . .   3
+   3.  PSK Security Properties . . . . . . . . . . . . . . . . . . .   3
      3.1.  Security Assumption Violations  . . . . . . . . . . . . .   3
-       3.1.1.  Redirection (Selfie-style)  . . . . . . . . . . . . .   3
+       3.1.1.  Redirection (Selfie-style)  . . . . . . . . . . . . .   4
        3.1.2.  Lack of DHE . . . . . . . . . . . . . . . . . . . . .   4
-       3.1.3.  Compromise of an uninvolved node  . . . . . . . . . .   4
-   4.  Recommendations for External PSK Usage  . . . . . . . . . . .   5
+       3.1.3.  Compromise of an uninvolved node  . . . . . . . . . .   5
+   4.  Recommendations for External PSK Usage  . . . . . . . . . . .   6
    5.  Privacy Properties  . . . . . . . . . . . . . . . . . . . . .   6
-   6.  External PSK Use Cases and Provisioning Processes . . . . . .   6
-     6.1.  Provisioning Examples . . . . . . . . . . . . . . . . . .   7
+   6.  External PSK Use Cases and Provisioning Processes . . . . . .   7
+     6.1.  Provisioning Examples . . . . . . . . . . . . . . . . . .   8
      6.2.  Provisioning Constraints  . . . . . . . . . . . . . . . .   8
-     6.3.  Stack Interfaces  . . . . . . . . . . . . . . . . . . . .   8
-       6.3.1.  PSK Identity encoding and comparison  . . . . . . . .   8
-   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   9
-   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
-     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   9
-     8.2.  Informative References  . . . . . . . . . . . . . . . . .   9
-   Appendix A.  Acknowledgements . . . . . . . . . . . . . . . . . .  11
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  11
+     6.3.  Stack Interfaces  . . . . . . . . . . . . . . . . . . . .   9
+       6.3.1.  PSK Identity encoding and comparison  . . . . . . . .   9
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .  10
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .  10
+     8.2.  Informative References  . . . . . . . . . . . . . . . . .  11
+   Appendix A.  Acknowledgements . . . . . . . . . . . . . . . . . .  12
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  12
 
 1.  Introduction
 
-   TODO
+   This document provides usage guidance for external Pre-Shared Keys
+   (PSKs) in TLS.  It lists TLS security properties provided by PSKs
+   under certain assumptions and demonstrates how violations of these
+   assumptions lead to attacks.  This document also discusses PSK use
+   cases, provisioning processes, and TLS stack implementation support
+   in the context of these assumptions.  It provides advice for
+   applications in various use cases to help meet these assumptions.
+
+
+
+
+
+Housley, et al.         Expires 10 September 2020               [Page 2]
+
+Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
+
+
+   The guidance provided in this document is applicable across TLS
+   [RFC8446], DTLS [I-D.ietf-tls-dtls13], and Constrained TLS
+   [I-D.rescorla-tls-ctls].
 
 2.  Conventions and Definitions
 
@@ -105,14 +129,6 @@ Table of Contents
 3.  PSK Security Properties
 
    TLS 1.3 tries to maintain the following seven security properties:
-
-
-
-
-Bar                     Expires 2 September 2020                [Page 2]
-
-Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
-
 
    1.  Matching the same session keys;
 
@@ -146,6 +162,14 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
    honest but curious participants know the key, can violate all these
    properties, bar one.  Endpoint Identity Protection holds vacuously,
    because the client and server do not use certificates in PSK mode.
+
+
+
+Housley, et al.         Expires 10 September 2020               [Page 3]
+
+Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
+
+
    (This is not true with use of the "tls_cert_with_extern_psk"
    extension [I-D.ietf-tls-tls13-cert-with-extern-psk].)
 
@@ -163,16 +187,9 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
 
    1.  "A" sends a "ClientHello" to "B".
 
-
-
-Bar                     Expires 2 September 2020                [Page 3]
-
-Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
-
-
    2.  The attacker intercepts the message and redirects it to "C".
 
-   3.  "C" responds with to "A".
+   3.  "C" responds with a "ServerHello" to "A".
 
    4.  "A" sends a "Finished" message to "B".  "A" has completed the
        handshake, ostensibly with "B".
@@ -197,9 +214,17 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
    Let the group of peers who know the key be "A", "B", and "C".  The
    attack proceeds as follows:
 
-   1.  "A" sends a "ClientHello" to "B", without including a key share.
+   1.  "A" sends a "ClientHello" to "B", without including a key share
+       extension.
 
    2.  The handshake completes as expected.
+
+
+
+Housley, et al.         Expires 10 September 2020               [Page 4]
+
+Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
+
 
    This attack violates the secrecy of session keys property, because
    even an honest but curious "C" can decrypt the session between "A"
@@ -217,14 +242,6 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
 
    Let the group of peers who know the key be "A", "B", and "C".  The
    attack proceeds as follows:
-
-
-
-
-Bar                     Expires 2 September 2020                [Page 4]
-
-Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
-
 
    1.   Let the attacker compromise "C".
 
@@ -254,17 +271,28 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
    properties outlined above.  The attack violates the same session keys
    property, as "A" and "B" have each completed a session, ostensibly
    with each other, and yet do not agree on the session key.  If "A"
-   does not send a key share, then the attacker can have a session with
-   "A" and a separate session with "B", where both sessions have the
-   same key.  This violates the uniqueness of session keys property.  In
-   the case of KCI resistance, where we assume the attacker has
-   compromised "A", the attacker can successfully impersonate "B" to "A"
-   using this pattern.
+   does not send a key share extension, then the attacker can have a
+   session with "A" and a separate session with "B", where both sessions
+   have the same key.  Since the attacker has knowledge of all of the
+
+
+
+Housley, et al.         Expires 10 September 2020               [Page 5]
+
+Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
+
+
+   messages and their content, the nonce in the handshake does not
+   prevent the attacker from computing the full key schedule.  This
+   violates the uniqueness of session keys property.  In the case of KCI
+   resistance, where we assume the attacker has compromised "A", the
+   attacker can successfully impersonate "B" to "A" using this pattern.
 
 4.  Recommendations for External PSK Usage
 
-   Given the desired security goals from Section 3, applications which
-   make use of external PSKs MUST adhere to the following requirements:
+   To achieve the security goals from Section 3 when the external PSK
+   will not be combined with a pairwise secret value, applications MUST
+   use external PSKs that adhere to the following requirements:
 
    *  Each PSK MUST NOT be shared between with more than two logical
       nodes.  As a result, an agent that acts as both a client and a
@@ -274,13 +302,6 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
    *  Nodes SHOULD use external PSK importers
       [I-D.ietf-tls-external-psk-importer] when configuring PSKs for
       individual TLS connections.
-
-
-
-Bar                     Expires 2 September 2020                [Page 5]
-
-Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
-
 
    *  Each PSK MUST be at least 128-bits long.
 
@@ -300,6 +321,22 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
    link successive connections that use the same external PSK together.
    Preventing this type of linkability is out of scope, as PSKs are
    explicitly designed to support mutual authentication.
+
+
+
+
+
+
+
+
+
+
+
+
+Housley, et al.         Expires 10 September 2020               [Page 6]
+
+Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
+
 
 6.  External PSK Use Cases and Provisioning Processes
 
@@ -321,22 +358,21 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
       PSKs, primarily for the purposes of supporting TLS connections
       with fast open (0-RTT data).
 
+   *  Certificateless server-to-server communication.  Machine-to-
+      machine communication may use externally provisioned PSKs,
+      primarily for the purposes of establishing TLS connections without
+      requiring the overhead of provisioning and managing PKI
+      certificates.
+
    *  Internet of Things (IoT) and devices with limited computational
       capabilities.  [RFC7925] defines TLS and DTLS profiles for
       resource-constrained devices and suggests the use of PSK
-      ciphersuites for compliant devices.
+      ciphersuites for compliant devices.  The Open Mobile Alliance
+      Lightweight Machine to Machine Technical Specification [LwM2M]
+      states that LwM2M servers MUST support the PSK mode of DTLS.
 
    *  Use of PSK ciphersuites are optional when securing RADIUS
       [RFC2865] with TLS as specified in [RFC6614].
-
-
-
-
-
-Bar                     Expires 2 September 2020                [Page 6]
-
-Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
-
 
    *  The Generic Authentication Architecture (GAA) defined by 3GGP
       mentions that TLS-PSK can be used between a server and user
@@ -349,6 +385,14 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
    There are also use cases where PSKs are shared between more than two
    entities.  Some examples below (as noted by Akhmetzyanova et
    al.[Akhmetzyanova]):
+
+
+
+
+Housley, et al.         Expires 10 September 2020               [Page 7]
+
+Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
+
 
    *  Group chats.  In this use-case, the membership of a group is
       confirmed by the possession of a PSK distributed out-of-band to
@@ -386,13 +430,9 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
    *  Secrets may be baked into or hardware or software device
       components, such as secure enclaves.
 
-
-
-
-Bar                     Expires 2 September 2020                [Page 7]
-
-Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
-
+   *  Where secrets are baked into hardware at manufacturing time, the
+      secrets may be printed on labels or included in a Bill of
+      Materials for ease of scanning or import into a server.
 
 6.2.  Provisioning Constraints
 
@@ -402,6 +442,14 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
    not want to distribute pair-wise shared keys to achieve this.  As
    another example, some systems require the provisioning process to
    embed application-specific information in either PSKs or their
+
+
+
+Housley, et al.         Expires 10 September 2020               [Page 8]
+
+Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
+
+
    identities.  Identities may sometimes need to be routable, as is
    currently under discussion for EAP-TLS-PSK.
 
@@ -442,14 +490,6 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
    other hand, [RFC7925] advises implementations against assuming any
    structured format for PSK identities and recommends byte-by-byte
    comparison for any operations.  TLS version 1.3 [RFC8446] follows the
-
-
-
-Bar                     Expires 2 September 2020                [Page 8]
-
-Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
-
-
    same practice of specifying the psk identity as a sequence of opaque
    bytes (shown as opaque identity<1..2^16-1>).
 
@@ -458,6 +498,13 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
    *  Implementations such as OpenSSL and mbedTLS nonetheless treat
       psk_identities as character strings and use string operators such
       as "strcmp" on the psk identity.
+
+
+
+Housley, et al.         Expires 10 September 2020               [Page 9]
+
+Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
+
 
    *  Implementations also assign default identities to PSKs (for
       example, the string 'Client_identity') if none are configured.
@@ -475,12 +522,25 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
 
 8.1.  Normative References
 
+   [I-D.ietf-tls-dtls13]
+              Rescorla, E., Tschofenig, H., and N. Modadugu, "The
+              Datagram Transport Layer Security (DTLS) Protocol Version
+              1.3", Work in Progress, Internet-Draft, draft-ietf-tls-
+              dtls13-35, 7 March 2020, <http://www.ietf.org/internet-
+              drafts/draft-ietf-tls-dtls13-35.txt>.
+
    [I-D.ietf-tls-external-psk-importer]
               Benjamin, D. and C. Wood, "Importing External PSKs for
               TLS", Work in Progress, Internet-Draft, draft-ietf-tls-
               external-psk-importer-03, 15 February 2020,
               <http://www.ietf.org/internet-drafts/draft-ietf-tls-
               external-psk-importer-03.txt>.
+
+   [I-D.rescorla-tls-ctls]
+              Rescorla, E., Barnes, R., and H. Tschofenig, "Compact TLS
+              1.3", Work in Progress, Internet-Draft, draft-rescorla-
+              tls-ctls-03, 4 November 2019, <http://www.ietf.org/
+              internet-drafts/draft-rescorla-tls-ctls-03.txt>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -495,16 +555,14 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
               <https://www.rfc-editor.org/info/rfc8446>.
 
-8.2.  Informative References
 
 
-
-
-
-Bar                     Expires 2 September 2020                [Page 9]
+Housley, et al.         Expires 10 September 2020              [Page 10]
 
 Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
 
+
+8.2.  Informative References
 
    [Akhmetzyanova]
               Akhmetzyanova, L., Alekseev, E., Smyshlyaeva, E., and A.
@@ -531,6 +589,12 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
               <https://link.springer.com/content/
               pdf/10.1007/978-3-540-45146-4_24.pdf>.
 
+   [LwM2M]    "Lightweight Machine to Machine Technical Specification",
+              n.d.,
+              <http://www.openmobilealliance.org/release/LightweightM2M/
+              V1_0-20170208-A/OMA-TS-LightweightM2M-
+              V1_0-20170208-A.pdf>.
+
    [RFC2865]  Rigney, C., Willens, S., Rubens, A., and W. Simpson,
               "Remote Authentication Dial In User Service (RADIUS)",
               RFC 2865, DOI 10.17487/RFC2865, June 2000,
@@ -546,6 +610,14 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
               RFC 6614, DOI 10.17487/RFC6614, May 2012,
               <https://www.rfc-editor.org/info/rfc6614>.
 
+
+
+
+Housley, et al.         Expires 10 September 2020              [Page 11]
+
+Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
+
+
    [RFC7925]  Tschofenig, H., Ed. and T. Fossati, "Transport Layer
               Security (TLS) / Datagram Transport Layer Security (DTLS)
               Profiles for the Internet of Things", RFC 7925,
@@ -554,13 +626,6 @@ Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
 
    [Selfie]   Drucker, N. and S. Gueron, "Selfie: reflections on TLS 1.3
               with PSK", 2019, <https://eprint.iacr.org/2019/347.pdf>.
-
-
-
-Bar                     Expires 2 September 2020               [Page 10]
-
-Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
-
 
    [Sethi]    Sethi, M., Peltonen, A., and T. Aura, "Misbinding Attacks
               on Secure Device Pairing and Bootstrapping", Proceedings
@@ -582,30 +647,36 @@ Appendix A.  Acknowledgements
    Hoyland, Martin Thomson, Mohamad Badra, Mohit Sethi, Oleg Pekar, Owen
    Friel, and Russ Housley.
 
-Author's Address
+Authors' Addresses
 
-   Foo Bar
-   Baz, Inc.
+   Russ Housley
+   Vigil Security
 
-   Email: foobar@baz.com
-
-
+   Email: housley@vigilsec.com
 
 
+   Jonathan Hoyland
+   Cloudflare Ltd.
+
+   Email: jonathan.hoyland@gmail.com
 
 
+   Mohit Sethi
+   Ericsson
 
-
-
-
-
-
-
-
+   Email: mohit@piuha.net
 
 
 
 
+Housley, et al.         Expires 10 September 2020              [Page 12]
+
+Internet-Draft   Guidance for External PSK Usage in TLS       March 2020
+
+
+   Christopher A. Wood
+
+   Email: caw@heapingbits.net
 
 
 
@@ -613,4 +684,45 @@ Author's Address
 
 
 
-Bar                     Expires 2 September 2020               [Page 11]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Housley, et al.         Expires 10 September 2020              [Page 13]
